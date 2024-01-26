@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KristaRecords", "KristaRecords\KristaRecords.csproj", "{5E638393-DEC8-4EE9-A9C2-5CCC1C284CA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KristaRecords", "KristaRecords\KristaRecords.csproj", "{5E638393-DEC8-4EE9-A9C2-5CCC1C284CA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KristaRecords.Infrastructure", "KristaRecords.Infrastructure\KristaRecords.Infrastructure.csproj", "{946CC2EB-BDB5-48C5-9093-D4BFE1ED65DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KristaRecords.Infrastructure", "KristaRecords.Infrastructure\KristaRecords.Infrastructure.csproj", "{946CC2EB-BDB5-48C5-9093-D4BFE1ED65DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KristaRecords.Core", "KristaRecords.Core\KristaRecords.Core.csproj", "{6D6DF6E1-73D0-4A77-8DD7-83FC4B3C29DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{946CC2EB-BDB5-48C5-9093-D4BFE1ED65DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{946CC2EB-BDB5-48C5-9093-D4BFE1ED65DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{946CC2EB-BDB5-48C5-9093-D4BFE1ED65DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D6DF6E1-73D0-4A77-8DD7-83FC4B3C29DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6DF6E1-73D0-4A77-8DD7-83FC4B3C29DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D6DF6E1-73D0-4A77-8DD7-83FC4B3C29DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D6DF6E1-73D0-4A77-8DD7-83FC4B3C29DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

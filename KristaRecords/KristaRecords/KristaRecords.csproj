@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.24" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.26" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.26" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.26" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.26" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.26" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.26">
@@ -21,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\KristaRecords.Core\KristaRecords.Core.csproj" />
     <ProjectReference Include="..\KristaRecords.Infrastructure\KristaRecords.Infrastructure.csproj" />
   </ItemGroup>
 

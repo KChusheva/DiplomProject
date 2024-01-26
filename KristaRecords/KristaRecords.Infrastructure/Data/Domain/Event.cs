@@ -25,6 +25,10 @@ namespace KristaRecords.Infrastructure.Data.Domain
 
         [Required]
         public DateTime CompletionDate { get; set; }
+
+        public int CategoryId { get; set; }
+        public virtual Category Category { get; set; } = null!;
+
     }
 }
 
