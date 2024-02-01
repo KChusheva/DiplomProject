@@ -1,34 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using KristaRecords.Models.Category;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
-namespace KristaRecords.Infrastructure.Data.Domain
+namespace KristaRecords.Models.Event
 {
-    public class Event
+    public class EventEditVM
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
         [MaxLength(60)]
+        [Display(Name = "Event Name")]
         public string EventName { get; set; } = null!;
 
         [Required]
         [MaxLength(200)]
+        [Display(Name = "Description")]
         public string Description { get; set; } = null!;
 
         [Required]
+        [Display(Name = "Image")]
         public string Image { get; set; } = null!;
 
         [Required]
+        [Display(Name = "Day of Completion")]
         public DateTime CompletionDate { get; set; }
 
+        [Required]
+        [Display(Name = "Category")]
         public int CategoryId { get; set; }
-        public virtual Category? Category { get; set; }
-
+        public virtual List<CategoryPairVM> Categories { get; set; } = new List<CategoryPairVM>();
     }
 }
-

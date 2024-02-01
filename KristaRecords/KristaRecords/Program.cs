@@ -36,6 +36,7 @@ namespace KristaRecords
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddTransient<ICategoryService, CategoryService>();
+            builder.Services.AddTransient<IEventService, EventService>();
 
             var app = builder.Build();
 
