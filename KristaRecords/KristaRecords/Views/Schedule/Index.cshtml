@@ -1,5 +1,6 @@
 ﻿@using KristaRecords.Infrastructure.Data.Domain;
 @using Microsoft.AspNetCore.Identity;
+@using System.Globalization;
 @model IEnumerable<KristaRecords.Models.Schedule.ScheduleIndexVM>
 
 @{
@@ -58,7 +59,7 @@
                                 <input class="btn btn-info " type="submit" value="Info" />
                             </form>
 
-                            @if (!schedule.IsBusy && DateTime.Parse(schedule.Date) >= DateTime.Today)
+                            @if (!schedule.IsBusy && DateTime.ParseExact(schedule.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= DateTime.Today)
                             {
                             <form asp-controller="Reservations" asp-action="Create" asp-route-id="@schedule.Id" method="get" class="my-2">
                                     <input class="btn btn-success" type="submit" value="Reserve" />

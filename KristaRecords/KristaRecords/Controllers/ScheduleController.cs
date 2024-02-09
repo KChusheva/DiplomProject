@@ -98,7 +98,7 @@ namespace KristaRecords.Controllers
             ScheduleEditVM updatedSchedule = new ScheduleEditVM()
             {
                 Id = schedule.Id,
-                Date = schedule.Date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                Date = schedule.Date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
                 AvailableHours = schedule.AvailableHours,
                 Discount = schedule.Discount,
                 IsBusy = schedule.IsBusy,
@@ -113,7 +113,7 @@ namespace KristaRecords.Controllers
         {
             if (ModelState.IsValid)
             {
-                var parsedDate = DateTime.ParseExact(schedule.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                var parsedDate = DateTime.ParseExact(schedule.Date, "MM/dd/yyyy", CultureInfo.InvariantCulture);
                 var updated = await _scheduleService.UpdateSchedule(id, parsedDate, schedule.AvailableHours, schedule.Discount, schedule.IsBusy);
 
                 if (updated)

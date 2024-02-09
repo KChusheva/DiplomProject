@@ -12,6 +12,7 @@ using static Humanizer.In;
 using static System.Net.Mime.MediaTypeNames;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
 
 namespace KristaRecords.Core.Services
 {
@@ -97,9 +98,9 @@ namespace KristaRecords.Core.Services
         {
             return await _context.Schedules
                                  .AnyAsync(x => 
-                                           x.Date.Year == DateTime.ParseExact(date, "dd/MM/yyyy", null).Year &&
-                                           x.Date.Month == DateTime.ParseExact(date, "dd/MM/yyyy", null).Month &&
-                                           x.Date.Day == DateTime.ParseExact(date, "dd/MM/yyyy", null).Day
+                                           x.Date.Year == DateTime.ParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture).Year &&
+                                           x.Date.Month == DateTime.ParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture).Month &&
+                                           x.Date.Day == DateTime.ParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture).Day
                                           );
         }
 
