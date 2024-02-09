@@ -1,0 +1,73 @@
+﻿@model KristaRecords.Models.Schedule.ScheduleDetailsVM
+
+@{
+    ViewData["Title"] = "Schedule Details";
+}
+
+<h2>Schedule №@Model.Id Details</h2>
+
+<hr />
+<div>
+    <div class="col-md-4 col-12 justify-content-around align-self-center d-flex">
+        @if (!Model.IsBusy && DateTime.Parse(Model.Date) >= DateTime.Today)
+        {
+            <form asp-controller="Reservations" asp-action="Create" asp-route-id="@Model.Id" method="get" class="my-2">
+                <input class="btn btn-success" type="submit" value="Reserve" />
+            </form>
+        }
+
+        @if ((this.User.Identity.IsAuthenticated) && (this.User.IsInRole("Administrator")))
+        {
+            <form asp-controller="Schedule" asp-action="Edit" asp-route-id="@Model.Id" method="get" class="my-2">
+                <input class="btn btn-primary" type="submit" value="Change" />
+            </form>
+            @if (!Model.IsBusy)
+            {
+                <form asp-controller="Schedule" asp-action="Delete" asp-route-id="@Model.Id" method="get" class="my-2">
+                    <input class="btn btn-danger" type="submit" value="Delete" />
+            </form>
+            }
+        }
+    </div>
+
+
+    <div class="my-5 dl-horizontal">
+        <div class="d-flex">
+            <div>
+                <p>
+                    <strong>Date:</strong> @Html.DisplayFor(model => model.Date)
+                </p>
+                <p>
+                    <strong>Available Hours:</strong> @Html.DisplayFor(model => model.AvailableHours)
+                </p>
+                <p>
+                    <strong>Discount: </strong>@Html.DisplayFor(model => model.Discount)$
+                </p>
+                <p>
+                    <strong>Schedule is busy: </strong>@(Model.IsBusy ? "Yes" : "No")
+                </p>
+            </div>
+        </div>
+
+        @if (this.User.IsInRole("Administrator"))
+        {
+            <div class="my-5">
+                <p>
+                    <strong> @Html.DisplayNameFor(model => model.Reservations):</strong>
+                </p>
+                @if (Model.Reservations.Any())
+                {
+                    <ul class="list-group pb-3 list-inline">
+                    </ul>
+                }
+                else
+                {
+                    <p>No reservations made yet.</p>
+                }
+            </div>
+        }
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

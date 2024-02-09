@@ -6,6 +6,7 @@ using KristaRecords.Infrastructure.Data.Domain;
 using KristaRecords.Models.Category;
 using KristaRecords.Models.Event;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Globalization;
 
 namespace KristaRecords.Controllers
 {
@@ -32,7 +33,7 @@ namespace KristaRecords.Controllers
                 EventName = e.EventName,
                 Description = e.Description,
                 Image = e.Image,
-                CompletionDate = e.CompletionDate,
+                CompletionDate = e.CompletionDate.ToString("MM/dd/yyyy HH:mm tt", CultureInfo.InvariantCulture),
                 CategoryId = e.CategoryId,
                 CategoryName = e.Category.CategoryName,
                 CategoryHourlyRate = e.Category.HourlyRate
@@ -57,7 +58,7 @@ namespace KristaRecords.Controllers
                 EventName = item.EventName,
                 Description = item.Description,
                 Image = item.Image,
-                CompletionDate = item.CompletionDate,
+                CompletionDate = item.CompletionDate.ToString("MM/dd/yyyy HH:mm tt", CultureInfo.InvariantCulture),
                 CategoryName = item.Category.CategoryName,
                 CategoryHourlyRate = item.Category.HourlyRate
             };
@@ -87,7 +88,8 @@ namespace KristaRecords.Controllers
         {
             if (ModelState.IsValid)
             {
-                var createdId = _eventService.Create(_event.EventName, _event.Description, _event.Image, _event.CompletionDate, _event.CategoryId);
+                var parsedCompletionDate = DateTime.ParseExact(_event.CompletionDate, "MM/dd/yyyy h:mm tt", CultureInfo.InvariantCulture);
+                var createdId = _eventService.Create(_event.EventName, _event.Description, _event.Image, parsedCompletionDate, _event.CategoryId);
                 if (createdId)
                 {
                     return RedirectToAction(nameof(Index));
@@ -112,7 +114,7 @@ namespace KristaRecords.Controllers
                 EventName = _event.EventName,
                 Description = _event.Description,
                 Image = _event.Image,
-                CompletionDate = _event.CompletionDate,
+                CompletionDate = _event.CompletionDate.ToString("MM/dd/yyyy HH:mm tt", CultureInfo.InvariantCulture),
                 CategoryId = _event.CategoryId,
             };
            
@@ -137,7 +139,8 @@ namespace KristaRecords.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var updated = _eventService.Update(id, _event.EventName, _event.Description, _event.Image, _event.CompletionDate, _event.CategoryId);
+                    var parsedCompletionDate = DateTime.ParseExact(_event.CompletionDate, "MM/dd/yyyy h:mm tt", CultureInfo.InvariantCulture);
+                    var updated = _eventService.Update(id, _event.EventName, _event.Description, _event.Image, parsedCompletionDate, _event.CategoryId);
                     if (updated)
                     {
                         return this.RedirectToAction("Index");
@@ -164,7 +167,7 @@ namespace KristaRecords.Controllers
                 EventName = item.EventName,
                 Description = item.Description,
                 Image = item.Image,
-                CompletionDate = item.CompletionDate,
+                CompletionDate = item.CompletionDate.ToString("MM/dd/yyyy HH:mm tt", CultureInfo.InvariantCulture),
                 CategoryId = item.CategoryId,
                 CategoryName = item.Category.CategoryName,
                 CategoryHourlyRate = item.Category.HourlyRate

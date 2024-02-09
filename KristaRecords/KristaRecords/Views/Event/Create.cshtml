@@ -38,8 +38,22 @@
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CompletionDate" class="control-label"></label>
-                <input asp-for="CompletionDate" class="form-control" id="CompletionDate"  />
+                <label asp-for="CompletionDate" class="control-label form-label"></label>
+                <div class="input-group"
+                     id="datetimepicker1"
+                     data-td-target-input="nearest"
+                     data-td-target-toggle="nearest">
+                    <input asp-for="CompletionDate"
+                           id="datetimepicker1Input"
+                           type="text"
+                           class="form-control"
+                           data-td-target="#datetimepicker1" />
+                    <span class="input-group-text"
+                          data-td-target="#datetimepicker1"
+                          data-td-toggle="datetimepicker">
+                        <span class="fas fa-calendar"></span>
+                    </span>
+                </div>
                 <span asp-validation-for="CompletionDate" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -59,7 +73,67 @@
 
     <script>
         $(function () {
-            $('#CompletionDate').datetimepicker();
-        })
+            $('#datetimepicker1').tempusDominus({
+                display: {
+                    sideBySide: true,
+                    placement: "top",
+                    buttons: {
+                        today: true,
+                        clear: true,
+                        close: true
+                    },
+                }
+            });
+        });
+
+        // Select the target node
+        var targetNode = document.querySelector('body');
+
+        // Options for the observer (which mutations to observe)
+        var config = { childList: true, subtree: true };
+
+        // Callback function to execute when mutations are observed
+        var callback = function (mutationsList, observer) {
+            for (var mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    // Check if any of the added nodes have the class tempus-dominus-widget
+                    const tempusWidget = document.querySelector('.tempus-dominus-widget');
+                    if (tempusWidget) {
+                        // If the tempus-dominus-widget is shown, hide the div with data-action="incrementHours"
+                        const incrementHoursDiv = document.querySelector('[data-action="incrementHours"]');
+                        const incrementMinutesDiv = document.querySelector('[data-action="incrementMinutes"]');
+                        const decrementHoursDiv = document.querySelector('[data-action="decrementHours"]');
+                        const decrementMinutesDiv = document.querySelector('[data-action="decrementMinutes"]');
+
+                        if (incrementHoursDiv) {
+                            incrementHoursDiv.style.opacity = 0;
+                            incrementHoursDiv.style.pointerEvents = 'none';
+                        }
+
+                        if (incrementMinutesDiv) {
+                            incrementMinutesDiv.style.opacity = 0;
+                            incrementMinutesDiv.style.pointerEvents = 'none';
+                        }
+
+                        if (decrementHoursDiv) {
+                            decrementHoursDiv.style.opacity = 0;
+                            decrementHoursDiv.style.pointerEvents = 'none';
+                        }
+
+                        if (decrementMinutesDiv) {
+                            decrementMinutesDiv.style.opacity = 0;
+                            decrementMinutesDiv.style.pointerEvents = 'none';
+                        }
+                    }
+                }
+            }
+        };
+
+        // Create an observer instance linked to the callback function
+        var observer = new MutationObserver(callback);
+
+        // Start observing the target node for configured mutations
+        observer.observe(targetNode, config);
+
     </script>
 }

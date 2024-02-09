@@ -25,7 +25,7 @@ namespace KristaRecords.Models.Event
 
         [Required]
         [Display(Name = "Day of Completion")]
-        public DateTime CompletionDate { get; set; }
+        public string CompletionDate { get; set; } = null!;
 
         [Required]
         [Display(Name = "Category")]

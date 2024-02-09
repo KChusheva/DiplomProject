@@ -17,7 +17,7 @@ namespace KristaRecords.Models.Event
         public string Image { get; set; } = null!;
 
         [Display(Name = "Completion Date")]
-        public DateTime CompletionDate { get; set; }
+        public string CompletionDate { get; set; } = null!;
         public int CategoryId { get; set; }
 
         [Display(Name = "Category")]

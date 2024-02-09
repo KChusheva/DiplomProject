@@ -31,7 +31,7 @@ namespace KristaRecords.Infrastructure.Data.Domain
         public virtual ApplicationUser User { get; set; } = null!;
 
         [Required]
-        public DateTime SubmissionDateTime { get; set; }
+        public DateTime SubmissionDateTime { get; set; } = DateTime.Now;
 
         [Required]
         public decimal HourlyRate { get; set; }

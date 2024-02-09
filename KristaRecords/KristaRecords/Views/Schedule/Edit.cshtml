@@ -1,0 +1,123 @@
+﻿@model KristaRecords.Models.Schedule.ScheduleEditVM
+@inject KristaRecords.Core.Contracts.IScheduleService _scheduleService
+
+@{
+    ViewData["Title"] = "Edit schedule";
+    var occupiedDates = (await _scheduleService.GetAllOccupiedDates()).ToArray();
+}
+
+<h2>Edit</h2>
+
+<h4>Schedule</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4 col-12 mx-auto">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Date" class="control-label form-label"></label>
+                <div class="input-group"
+                     id="datetimepicker1"
+                     data-td-target-input="nearest"
+                     data-td-target-toggle="nearest">
+                    <input asp-for="Date"
+                           id="datetimepicker1Input"
+                           type="text"
+                           class="form-control"
+                           data-td-target="#datetimepicker1" />
+                    <span class="input-group-text"
+                          data-td-target="#datetimepicker1"
+                          data-td-toggle="datetimepicker">
+                        <span class="fas fa-calendar"></span>
+                    </span>
+                </div>
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AvailableHours" class="control-label"></label>
+                <input asp-for="AvailableHours" class="form-control" min="1" />
+                <span asp-validation-for="AvailableHours" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount" class="control-label"></label>
+                <input asp-for="Discount" class="form-control" min="0"/>
+                <span asp-validation-for="Discount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsBusy" checked="@Model.IsBusy" /> @Html.DisplayNameFor(model => model.IsBusy)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Edit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+
+<script>
+
+
+    $(function () {
+            function parseDateStringToDate(dateString) {
+                var parts = dateString.split(/[\s/:]+/); // Split the string by whitespace, /, and :
+                var month = parseInt(parts[0]) - 1; // Month is zero-based in JavaScript Date object
+                var day = parseInt(parts[1]);
+                var year = parseInt(parts[2]);
+                var hours = parseInt(parts[3]);
+                var minutes = parseInt(parts[4]);
+                var seconds = parseInt(parts[5]);
+                var ampm = parts[6];
+
+                // Adjust hours if it's in AM/PM format
+                if (ampm === "PM" && hours < 12) {
+                    hours += 12;
+                } else if (ampm === "AM" && hours === 12) {
+                    hours = 0;
+                }
+
+                return new Date(year, month, day, hours, minutes, seconds);
+            }
+
+        let disabledDates = [];
+        @foreach (var d in occupiedDates)
+        {
+            @:disabledDates.push(parseDateStringToDate("@d"));
+        }
+
+            $('#datetimepicker1').tempusDominus({
+                display: {
+                    placement: "top",
+                    buttons: {
+                        today: true,
+                        clear: true,
+                        close: true
+                    },
+                    components: {
+                        hours: false,
+                        minutes: false
+                    },
+                },
+                localization: {
+                    format: "L"
+                },
+                restrictions: {
+                    minDate: new Date(),
+                    disabledDates: disabledDates
+                }
+            });
+    });
+</script>
+}

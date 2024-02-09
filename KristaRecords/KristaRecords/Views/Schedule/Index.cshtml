@@ -1,0 +1,91 @@
+﻿@using KristaRecords.Infrastructure.Data.Domain;
+@using Microsoft.AspNetCore.Identity;
+@model IEnumerable<KristaRecords.Models.Schedule.ScheduleIndexVM>
+
+@{
+    ViewData["Title"] = "All Schedules";
+}
+<h1 class="text-center">Schedules</h1>
+
+@if ((this.User.Identity.IsAuthenticated) && (this.User.IsInRole("Administrator")))
+{
+    <form asp-controller="Schedule" asp-action="Create" method="get">
+        <input class="btn btn-info" type="submit" value="Add schedule" />
+    </form>
+}
+<hr />
+
+<form method="get" class="d-flex justify-content-around align-items-center col-md-12 col-12 flex-column flex-md-row">
+    <div class="form-group">
+        <div class="checkbox">
+            <label>
+                <input name="isDiscounted" type="checkbox" value="true" /><span>Discount</span>
+            </label>
+        </div>
+        <div class="checkbox">
+            <label>
+                <input name="isAvailable" type="checkbox" value="true" /><span>Available</span>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </div>
+</form>
+<br />
+<br />
+
+@if (Model?.Any() ?? false)
+{
+    <ul class="list-inline text-dark">
+
+        @foreach (var schedule in Model.OrderByDescending(x => DateTime.ParseExact(x.Date, "dd/MM/yyyy", null).Year).ThenByDescending(x => DateTime.ParseExact(x.Date, "dd/MM/yyyy", null).Month).ThenByDescending(x => DateTime.ParseExact(x.Date, "dd/MM/yyyy", null).Day))
+        {
+            <li class="pb-3 list-inline">
+                <a asp-action="Details" asp-controller="Schedule" asp-route-id="@schedule.Id" class="text-decoration-none">
+                    <div class="d-flex border border-info rounded blue-card justify-content-between list-inline text-dark flex-wrap flex-column flex-md-row w-100">
+                        <div class="my-5 col-md-6 col-12">
+                            <h3 class="text-dark font-weight-bold">Date: @schedule.Date</h3>
+                            <h5 class="text-dark ">Available Hours: @schedule.AvailableHours</h5>
+                            @if (schedule.Discount > 0)
+                            {
+                                <h5 class="text-dark ">Discount: @schedule.Discount$</h5>
+                            }
+                            <p class="text-dark mb-0">Schedule is busy: @(schedule.IsBusy ? "Yes" : "No")</p>
+                        </div>
+                        <div class="col-md-3 col-12 justify-content-around align-self-center d-flex flex-row flex-md-column">
+                            <form asp-controller="Schedule" asp-action="Details" asp-route-id="@schedule.Id" method="get" class="my-2">
+                                <input class="btn btn-info " type="submit" value="Info" />
+                            </form>
+
+                            @if (!schedule.IsBusy && DateTime.Parse(schedule.Date) >= DateTime.Today)
+                            {
+                            <form asp-controller="Reservations" asp-action="Create" asp-route-id="@schedule.Id" method="get" class="my-2">
+                                    <input class="btn btn-success" type="submit" value="Reserve" />
+                            </form>
+                            }
+
+                            @if ((this.User.Identity.IsAuthenticated) && (this.User.IsInRole("Administrator")))
+                            {
+                                <form asp-controller="Schedule" asp-action="Edit" asp-route-id="@schedule.Id" method="get" class="my-2">
+                                    <input class="btn btn-primary" type="submit" value="Change" />
+                                </form>
+                                @if (!schedule.IsBusy)
+                                {
+                                    <form asp-controller="Schedule" asp-action="Delete" asp-route-id="@schedule.Id" method="get" class="my-2">
+                                    <input class="btn btn-danger" type="submit" value="Delete"/>
+                                    </form>
+                                }
+                            }
+                        </div>
+
+                    </div>
+                </a>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <h1>No schedule match the search criteria</h1>
+}
