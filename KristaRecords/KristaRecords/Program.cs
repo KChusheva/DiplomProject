@@ -38,6 +38,7 @@ namespace KristaRecords
             builder.Services.AddTransient<ICategoryService, CategoryService>();
             builder.Services.AddTransient<IEventService, EventService>();
             builder.Services.AddTransient<IScheduleService, ScheduleService>();
+            builder.Services.AddTransient<IReservationService, ReservationService>();
 
             var app = builder.Build();
 

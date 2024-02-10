@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/KristaRecords.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@6.7.16/dist/css/tempus-dominus.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/solid.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@6.7.16/dist/js/tempus-dominus.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@6.7.16/dist/js/jQuery-provider.js"></script>
 </head>
 <body>
     <header>
@@ -64,15 +72,6 @@
             &copy; 2024 - KristaRecords - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/solid.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/js/fontawesome.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@6.7.16/dist/js/tempus-dominus.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@@eonasdan/tempus-dominus@6.7.16/dist/js/jQuery-provider.js"></script>
-
     @await RenderSectionAsync("Scripts", required: false);
 </body>
 </html>

@@ -1,0 +1,264 @@
+﻿@model KristaRecords.Models.Reservation.ReservationCreateVM
+
+@{
+    ViewData["Title"] = "Make a reservation";
+}
+
+<h2>Make a Reservation for schedule: @Model.ScheduleDate</h2>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <div class="col-md-4 mx-auto col-12">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <div class="form-group">
+                        <label asp-for="FromHour" class="control-label form-label"></label>
+                        <div class="input-group"
+                             id="datetimepicker1"
+                             data-td-target-input="nearest"
+                             data-td-target-toggle="nearest">
+                            <input asp-for="FromHour"
+                                   id="datetimepicker1Input"
+                                   type="text"
+                                   class="form-control"
+                                   data-td-target="#datetimepicker1" />
+                            <span class="input-group-text"
+                                  data-td-target="#datetimepicker1"
+                                  data-td-toggle="datetimepicker">
+                                <span class="fas fa-calendar"></span>
+                            </span>
+                        </div>
+                        <span asp-validation-for="FromHour" class="text-danger"></span>
+                    </div>
+                    <span asp-validation-for="FromHour" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ToHour" class="control-label form-label"></label>
+                    <div class="input-group"
+                         id="datetimepicker2"
+                         data-td-target-input="nearest"
+                         data-td-target-toggle="nearest">
+                        <input asp-for="ToHour"
+                               id="datetimepicker2Input"
+                               type="text"
+                               class="form-control"
+                               data-td-target="#datetimepicker2" />
+                        <span class="input-group-text"
+                              data-td-target="#datetimepicker2"
+                              data-td-toggle="datetimepicker">
+                            <span class="fas fa-calendar"></span>
+                        </span>
+                    </div>
+                    <span asp-validation-for="ToHour" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <span class="text-danger d-none" id="date-inval">Invalid date!</span>
+                </div>
+                <div class="form-group">
+                    <span class="text-danger d-none" id="date-error">The room is already reserved in that period.</span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CategoryId" class="control-label"></label>
+                    <select id="categorySelect" asp-for="CategoryId" class="form-control text-center">
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id" data-hourly-rate="@category.HourlyRate">@category.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <h5>Reservation data: </h5>
+                <br />
+                <div class="form-group">
+                    <label id="hourlyRateLabel" class="control-label">Price($) Per Hour</label>
+                    <input id="hourlyRateDisplay" class="form-control" readonly="readonly" value="0" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Discount" class="control-label"></label>
+                    <input asp-for="Discount" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Duration" class="control-label">Duration (In Hours)</label>
+                    <input asp-for="Duration" id="durationInput" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="TotalPrice" class="control-label"></label>
+                    <input asp-for="TotalPrice" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Reserve" class="btn btn-primary" />
+                    <a asp-action="Index" asp-controller="Schedule" class="btn btn-warning">Back to schedules</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    $(function () {
+        $('#datetimepicker1').tempusDominus({
+            useCurrent: false,
+            display: {
+                viewMode: 'clock',
+                components: {
+                    decades: false,
+                    year: false,
+                    month: false,
+                    date: false,
+                    hours: true,
+                    minutes: false,
+                    seconds: false,
+                },
+            },
+            localization: {
+                format: 'hh:mm t',
+                hourCycle: 'h23',
+            },
+        });
+
+        $('#datetimepicker2').tempusDominus({
+            useCurrent: false,
+            display: {
+                viewMode: 'clock',
+                components: {
+                    decades: false,
+                    year: false,
+                    month: false,
+                    date: false,
+                    hours: true,
+                    minutes: false,
+                    seconds: false,
+                },
+            },
+            localization: {
+                format: 'hh:mm t',
+                hourCycle: 'h23',
+            },
+        });
+
+        // Get references to the select element and the span for displaying hourly rate
+        var categorySelect = document.getElementById("categorySelect");
+        var hourlyRateDisplay = document.getElementById("hourlyRateDisplay");
+
+        hourlyRateDisplay.value = categorySelect.options[categorySelect.selectedIndex].getAttribute("data-hourly-rate")
+        // Add change event listener to the select element
+        categorySelect.addEventListener("change", function () {
+            // Get the selected option
+            var selectedOption = categorySelect.options[categorySelect.selectedIndex];
+
+            // Get the hourly rate value from the selected option's data attribute
+            var hourlyRate = selectedOption.getAttribute("data-hourly-rate");
+
+            // Update the text content of the hourly rate display span
+            hourlyRateDisplay.value = hourlyRate;
+        });
+
+        // Get references to the input elements
+        var fromHourInput = document.getElementById("datetimepicker1Input");
+        var toHourInput = document.getElementById("datetimepicker2Input");
+        var durationInput = document.getElementById("durationInput");
+        var discountInput = document.getElementById("Discount");
+        var totalPriceInput = document.getElementById("TotalPrice");
+
+        // Add event listeners to the FromHour and ToHour inputs
+        fromHourInput.addEventListener("change", updateDuration);
+        toHourInput.addEventListener("change", updateDuration);
+
+        function truncateMinutesToZero(timeInput) {
+            // Get the current value of the input
+            var timeValue = timeInput.value;
+
+            // Split the time string into hours and minutes
+            var parts = timeValue.split(':');
+            var hours = parts[0];
+            var period = parts[1].split(' ')[1]; // Get AM/PM
+
+            // Set the minutes to '00'
+            timeValue = hours + ':00 ' + period;
+
+            // Assign the modified value back to the input
+            timeInput.value = timeValue;
+        }
+
+        // Function to calculate the duration and update the duration input
+        function updateDuration() {
+            truncateMinutesToZero(fromHourInput);
+            truncateMinutesToZero(toHourInput);
+
+            var fromHour = fromHourInput.value;
+            var toHour = toHourInput.value;
+
+            // Parse TimeSpan values
+            var fromTimeSpan = parseTimeSpan(fromHour);
+            var toTimeSpan = parseTimeSpan(toHour);
+            // Calculate duration in hours
+            if (!isNaN(fromTimeSpan) && !isNaN(toTimeSpan)) {
+                // Handle the case where 'to' time is before 'from' time (across different days)
+                if (toTimeSpan < fromTimeSpan) {
+                    toTimeSpan += 24 * 3600 * 10000000; // Add a full day's worth of ticks to 'to' time
+                }
+
+                // Calculate duration in hours
+                var duration = (toTimeSpan - fromTimeSpan) / (3600 * 10000000); // Convert ticks to hours
+
+                // Update the duration input value
+                durationInput.value = Math.round(duration);
+            }
+        }
+
+        // Function to parse TimeSpan values from string format
+        function parseTimeSpan(timeSpanString) {
+            if (!(timeSpanString === null) || !(timeSpanString === '')) {
+                var parts = timeSpanString.split(' '); // Split time and period (AM/PM)
+                var time = parts[0];
+                var period = parts[1].toUpperCase(); // Convert period to uppercase
+
+                var timeParts = time.split(':');
+                var hours = parseInt(timeParts[0], 10);
+                var minutes = parseInt(timeParts[1], 10);
+
+                // Adjust hours for PM
+                if (period === 'PM' && hours !== 12) {
+                    hours += 12;
+                }
+
+                // Adjust hours for AM when it's 12 AM (midnight)
+                if (period === 'AM' && hours === 12) {
+                    hours = 0;
+                }
+
+                // Calculate total ticks
+                var totalTicks = (hours * 3600 + minutes * 60) * 10000000;
+            }
+
+            return totalTicks ?? 0;
+        }
+
+        fromHourInput.addEventListener("change", updateTotalPrice);
+        toHourInput.addEventListener("change", updateTotalPrice);
+        durationInput.addEventListener("change", updateTotalPrice);
+        categorySelect.addEventListener("change", updateTotalPrice);
+
+        function updateTotalPrice() {
+            // Parse input values
+            var hourlyRate = parseFloat(hourlyRateDisplay.value);
+            var duration = parseFloat(durationInput.value);
+            var discount = parseFloat(discountInput.value);
+
+            // Calculate total price using the provided formula
+            var totalPrice = hourlyRate * duration - hourlyRate * duration * discount / 100;
+
+            // Update total price input value
+            totalPriceInput.value = totalPrice.toFixed(2); // Round to 2 decimal places
+        }
+    });
+</script>

@@ -11,7 +11,7 @@ namespace KristaRecords.Models.Schedule
         public string? Date { get; set; }
 
         [Required]
-        [Range(1, double.MaxValue)]
+        [Range(1, 12)]
         [Display(Name = "Available Hours")]
         public int AvailableHours { get; set; }
 

@@ -39,13 +39,13 @@ namespace KristaRecords.Infrastructure.Data.Domain
         [Required]
         public decimal Discount { get; set; }
 
+        [Required]
+        [Column(TypeName = "Time")]
+        public TimeSpan FromHour { get; set; }
 
-        public decimal TotalAmount
-        {
-            get
-            {
-                return this.HourlyRate * this.DurationHours - this.HourlyRate * this.DurationHours * this.Discount / 100;
-            }
-        }
+        [Required]
+        [Column(TypeName = "Time")]
+        public TimeSpan ToHour { get; set; }
+        public decimal TotalAmount { get; set;}
     }
 }
