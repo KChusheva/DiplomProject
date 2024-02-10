@@ -52,12 +52,25 @@ namespace KristaRecords.Controllers
         public async Task<IActionResult> Create(int id, ReservationCreateVM bindingModel)
         {
             string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             TimeSpan fromHour = DateTime.ParseExact(bindingModel.FromHour, "hh:mm tt", CultureInfo.InvariantCulture).TimeOfDay;
             TimeSpan toHour = DateTime.ParseExact(bindingModel.ToHour, "hh:mm tt", CultureInfo.InvariantCulture).TimeOfDay;
 
-            if (fromHour >= toHour || bindingModel.Duration <= 0)
+            Schedule schedule = await _scheduleService.GetSchedule(id);
+
+            bindingModel.Categories = _categoryService.GetCategories().Select(x => new CategoryPairVM()
             {
-                this.ModelState.AddModelError("", "Invalid period");
+                Id = x.Id,
+                Name = x.CategoryName,
+                HourlyRate = x.HourlyRate
+            }).ToList();
+
+            bindingModel.ScheduleDate = schedule.Date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+            bindingModel.Discount = schedule.Discount;
+
+            if (fromHour >= toHour || bindingModel.Duration <= 0 || bindingModel.Duration > schedule.AvailableHours)
+            {
+                this.ModelState.AddModelError("", "Invalid reservation period");
             }
 
             if (!ModelState.IsValid)
