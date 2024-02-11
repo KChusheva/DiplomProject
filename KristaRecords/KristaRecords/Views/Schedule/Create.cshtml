@@ -94,7 +94,7 @@
             $('#datetimepicker1').tempusDominus({
                 display: {
                     buttons: {
-                        today: true,
+                        today: false,
                         clear: true,
                         close: true
                     },
@@ -107,7 +107,7 @@
                     format: "L"
                 },
                 restrictions: {
-                    minDate: new Date(),
+                    minDate: new Date(new Date().setDate(new Date().getDate() + 1)),
                     disabledDates: disabledDates
                 }
             });

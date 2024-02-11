@@ -49,8 +49,7 @@ namespace KristaRecords.Controllers
                 DateTime now = DateTime.Now;
                 TimeSpan cutoffTime = new TimeSpan(20, 0, 0);
 
-                schedules = schedules.Where(x => (x.Date == DateTime.Today && now.TimeOfDay < cutoffTime && x.AvailableHours > 0) ||
-                                                 (x.Date > DateTime.Today && x.AvailableHours > 0));
+                schedules = schedules.Where(x => x.Date > DateTime.Today && x.AvailableHours > 0);
             }
 
             IEnumerable<ScheduleIndexVM> schedulesVM = schedules.Select(x => new ScheduleIndexVM
