@@ -20,6 +20,7 @@
                              data-td-target-input="nearest"
                              data-td-target-toggle="nearest">
                             <input asp-for="FromHour"
+                                   readonly
                                    id="datetimepicker1Input"
                                    type="text"
                                    class="form-control"
@@ -40,6 +41,7 @@
                          data-td-target-input="nearest"
                          data-td-target-toggle="nearest">
                         <input asp-for="ToHour"
+                               readonly
                                id="datetimepicker2Input"
                                type="text"
                                class="form-control"
@@ -268,15 +270,18 @@
             // Parse TimeSpan values
             var fromTimeSpan = parseTimeSpan(fromHour);
             var toTimeSpan = parseTimeSpan(toHour);
+
+
             // Calculate duration in hours
             if (!isNaN(fromTimeSpan) && !isNaN(toTimeSpan)) {
                 // Handle the case where 'to' time is before 'from' time (across different days)
-                if (toTimeSpan < fromTimeSpan) {
+                if (toTimeSpan < fromTimeSpan && toTimeSpan != 0) {
                     toTimeSpan += 24 * 3600 * 10000000; // Add a full day's worth of ticks to 'to' time
                 }
 
                 // Calculate duration in hours
-                var duration = (toTimeSpan - fromTimeSpan) / (3600 * 10000000); // Convert ticks to hours
+
+                var duration = toTimeSpan != 0 ? (toTimeSpan - fromTimeSpan) / (3600 * 10000000) : 0; // Convert ticks to hours
 
                 // Update the duration input value
                 durationInput.value = Math.round(duration);

@@ -79,7 +79,7 @@ namespace KristaRecords.Controllers
         {
             Schedule schedule = await _scheduleService.GetSchedule(id);
 
-            if (schedule == null || (schedule.Date < DateTime.Now) || schedule?.AvailableHours <= 0)
+            if (schedule == null || (schedule.Date <= DateTime.Now) || schedule?.AvailableHours <= 0)
             {
                 return NotFound();
             }
@@ -168,7 +168,7 @@ namespace KristaRecords.Controllers
                 this.NotFound();
             }
 
-            await _reservationService.DeleteReservation(id);
+            await _reservationService.DeleteReservation(id, reservation.Schedule.Id);
 
             return this.RedirectToAction(nameof(Index));
         }

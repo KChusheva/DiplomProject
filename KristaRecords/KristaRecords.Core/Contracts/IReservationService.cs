@@ -18,6 +18,6 @@ namespace KristaRecords.Core.Contracts
 
         Task<Reservation> GetReservation(int id);
 
-        Task DeleteReservation(int id);
+        Task DeleteReservation(int id, int scheduleId);
     }
 }

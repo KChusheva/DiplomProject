@@ -22,6 +22,7 @@
                      data-td-target-input="nearest"
                      data-td-target-toggle="nearest">
                     <input asp-for="Date"
+                           readonly
                            id="datetimepicker1Input"
                            type="text"
                            class="form-control"
@@ -113,7 +114,7 @@
                     format: "L"
                 },
                 restrictions: {
-                    minDate: new Date(),
+                    minDate: new Date(new Date().setDate(new Date().getDate() + 1)),
                     disabledDates: disabledDates
                 }
             });

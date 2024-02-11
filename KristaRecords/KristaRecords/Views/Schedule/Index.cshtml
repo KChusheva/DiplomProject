@@ -74,7 +74,7 @@
                                 <input class="btn btn-info " type="submit" value="Info" />
                             </form>
 
-                            @if (schedule.AvailableHours > 0 && DateTime.ParseExact(schedule.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= DateTime.Today)
+                            @if (schedule.AvailableHours > 0 && DateTime.ParseExact(schedule.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture) > DateTime.Today)
                             {
                                 <form asp-controller="Reservation" asp-action="Create" asp-route-id="@schedule.Id" method="get" class="my-2">
                                     <input class="btn btn-success" type="submit" value="Reserve" />

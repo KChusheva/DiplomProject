@@ -78,13 +78,17 @@ namespace KristaRecords.Core.Services
             return await _context.Reservations.Where(x => x.UserId == userId).OrderByDescending(x => x.SubmissionDateTime).ToListAsync();
         }
 
-        public async Task DeleteReservation(int id)
+        public async Task DeleteReservation(int id, int scheduleId)
         {
             var reservation = await _context.Reservations.FindAsync(id);
 
             if (reservation != null)
             {
+                var schedule = await _context.Schedules.FindAsync(scheduleId);
+                schedule.AvailableHours += reservation.DurationHours;
+
                 _context.Reservations.Remove(reservation);
+                _context.Schedules.Update(schedule);
                 await _context.SaveChangesAsync();  
             }
         }
