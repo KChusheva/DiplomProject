@@ -61,6 +61,11 @@ namespace KristaRecords.Core.Services
             return await _context.Reservations.OrderByDescending(x => x.Schedule.Date).ThenBy(x => x.FromHour).ToListAsync();
         }
 
+        public async Task<Reservation> GetReservation(int id)
+        {
+            return await _context.Reservations.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public List<(int, int)> GetReservationsDatesForSchedule(ICollection<Reservation> reservations)
         {
             var reservationsForSchedule = reservations.Select(r => (r.FromHour.Hours, r.ToHour.Hours)).ToList();
@@ -71,6 +76,17 @@ namespace KristaRecords.Core.Services
         public async Task<List<Reservation>> GetReservationsForUser(string userId)
         {
             return await _context.Reservations.Where(x => x.UserId == userId).OrderByDescending(x => x.SubmissionDateTime).ToListAsync();
+        }
+
+        public async Task DeleteReservation(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+
+            if (reservation != null)
+            {
+                _context.Reservations.Remove(reservation);
+                await _context.SaveChangesAsync();  
+            }
         }
     }
 }

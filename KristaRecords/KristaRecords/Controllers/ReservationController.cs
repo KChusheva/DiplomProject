@@ -1,4 +1,5 @@
 ﻿using KristaRecords.Core.Contracts;
+using KristaRecords.Core.Services;
 using KristaRecords.Infrastructure.Data.Domain;
 using KristaRecords.Infrastrucutre.Data;
 using KristaRecords.Models.Category;
@@ -27,21 +28,6 @@ namespace KristaRecords.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Index(string Username)
         {
-            //.Select(x => new ReservationIndexVM
-            // {
-            //     Id = x.Id,
-            //     Username = x.User.UserName,
-            //     CategoryName = x.Category.CategoryName,
-            //     Discount = x.Discount,
-            //     DurationHours = x.DurationHours,
-            //     ScheduleDate = x.Schedule.Date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
-            //     FromHour = x.FromHour.ToString("hh"),
-            //     ToHour = x.ToHour.ToString("hh"),
-            //     HourlyRate = x.HourlyRate,
-            //     SubmissionDate = x.SubmissionDateTime.ToString("dd/MM/yyyy hh:mm"),
-            //     TotalPrice = x.TotalAmount
-
-            // }).ToList();
             List<Reservation> reservationsDB = await _reservationService.GetAll();
 
             if (!String.IsNullOrEmpty(Username))
@@ -169,6 +155,22 @@ namespace KristaRecords.Controllers
             }
 
             return View(bindingModel);
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var reservation = await _reservationService.GetReservation(id);
+
+            if (reservation == null)
+            {
+                this.NotFound();
+            }
+
+            await _reservationService.DeleteReservation(id);
+
+            return this.RedirectToAction(nameof(Index));
         }
     }
 }

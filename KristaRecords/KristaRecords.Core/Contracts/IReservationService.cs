@@ -15,5 +15,9 @@ namespace KristaRecords.Core.Contracts
 
         Task<bool> AddReservation(int scheduleId, string userId, int categoryId, int duration, TimeSpan fromHour, TimeSpan toHour, decimal totalPrice);
         List<(int, int)> GetReservationsDatesForSchedule(ICollection<Reservation> reservations);
+
+        Task<Reservation> GetReservation(int id);
+
+        Task DeleteReservation(int id);
     }
 }
