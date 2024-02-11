@@ -10,7 +10,7 @@
 <hr />
 <div>
     <div class="col-md-4 col-12 justify-content-around align-self-center d-flex">
-        @if (!Model.IsBusy && DateTime.ParseExact(Model.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= DateTime.Today)
+        @if (Model.AvailableHours > 0 && DateTime.ParseExact(Model.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= DateTime.Today)
         {
             <form asp-controller="Reservation" asp-action="Create" asp-route-id="@Model.Id" method="get" class="my-2">
                 <input class="btn btn-success" type="submit" value="Reserve" />
@@ -59,6 +59,19 @@
                 @if (Model.Reservations.Any())
                 {
                     <ul class="list-group pb-3 list-inline">
+                        @foreach (var res in Model.Reservations)
+                        {
+                            <li class="list-group-item blue-card">
+                                
+                                    <p class="h5">Reservation #@res.Id</p>
+                                    <p class="text-dark mb-0">User: @res.Username</p>
+                                    <p class="text-dark mb-0">Price: @res.TotalPrice$</p>
+                                    <p class="text-dark mb-0">Period: @res.ScheduleDate @res.FromHour:00 - @res.ScheduleDate @res.ToHour:00</p>
+                                    <p class="text-dark mb-0">Category: @res.CategoryName</p>
+                                    <p class="text-dark mb-0">Submission Date: @res.SubmissionDate</p>
+                             
+                            </li>
+                        }
                     </ul>
                 }
                 else

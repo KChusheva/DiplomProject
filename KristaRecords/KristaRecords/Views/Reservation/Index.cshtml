@@ -1,0 +1,57 @@
+﻿@model List<KristaRecords.Models.Reservation.ReservationIndexVM>
+
+@{
+    ViewData["Title"] = "All reservations";
+}
+
+<div class="d-inline-flex w-100 justify-content-center">
+    <h1 class="text-center">All reservations</h1>
+</div>
+
+<hr />
+
+@if (Model.Any())
+{
+    <form asp-controller="Reservation" asp-action="Index" method="get">
+        <p>
+            Username: <input type="text" name="Username" />
+            <input type="submit" value="Filter" />
+        </p>
+    </form>
+    <ul class="list-inline text-dark">
+
+        @foreach (var reservation in Model)
+        {
+            <li class="pb-3">
+                <div class="d-flex border border-info rounded blue-card justify-content-between list-inline text-dark flex-wrap flex-column flex-md-row w-100">
+                    <div class="col-md-1 col-0"></div>
+                    <div class="my-5 col-md-8 col-12">
+                        <h3 class="text-dark font-weight-bold">Reservation №@reservation.Id</h3>
+                        <h5 class="text-dark">Schedule: @reservation.ScheduleDate</h5>
+                        <h5 class="text-dark">User: @reservation.Username</h5>
+                        <br />
+                        <div>
+                            <p class="text-dark ">Category: @reservation.CategoryName</p>
+                            <p class="text-dark ">Duration Hours: @reservation.DurationHours</p>
+                            <p class="text-dark ">Hourly Rate: @reservation.HourlyRate $</p>
+                            <p class="text-dark ">Discount: @reservation.Discount %</p>
+                            <p class="text-dark ">Total price: @reservation.TotalPrice $</p>
+                        </div>
+                        <p class="text-dark ">Reservation hours: @reservation.FromHour - @reservation.ToHour</p>
+                        <p class="text-dark ">Submittion date: @reservation.SubmissionDate</p>
+                    </div>
+                    <div class="col-md-3 col-12 justify-content-around align-self-center d-flex flex-row flex-md-column">
+                        <form asp-controller="Reservation" asp-action="Delete" asp-route-id="@reservation.Id" class="my-2"
+                              method="post">
+                            <input class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to cancel the reservation?')" value="Cancel" />
+                        </form>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <h3>No reservations made yet</h3>
+}

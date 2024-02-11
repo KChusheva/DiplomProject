@@ -14,7 +14,7 @@ namespace KristaRecords.Core.Services
     {
         private readonly ApplicationDbContext _context;
 
-        public ReservationService(ApplicationDbContext context) 
+        public ReservationService(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -42,13 +42,13 @@ namespace KristaRecords.Core.Services
                 TotalAmount = totalPrice
             };
 
-            if(duration > schedule.AvailableHours)
+            if (duration > schedule.AvailableHours)
             {
                 return false;
             }
 
             schedule.AvailableHours -= duration;
-            schedule.IsBusy = true; 
+            schedule.IsBusy = true;
             _context.Schedules.Update(schedule);
             _context.Reservations.Add(reservation);
 
@@ -56,14 +56,21 @@ namespace KristaRecords.Core.Services
 
         }
 
-        public Task<IEnumerable<T>> GetAll<T>()
+        public async Task<List<Reservation>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.Reservations.OrderByDescending(x => x.Schedule.Date).ThenBy(x => x.FromHour).ToListAsync();
         }
 
-        public Task<IEnumerable<T>> GetReservationsForUser<T>(string userId)
+        public List<(int, int)> GetReservationsDatesForSchedule(ICollection<Reservation> reservations)
         {
-            throw new NotImplementedException();
+            var reservationsForSchedule = reservations.Select(r => (r.FromHour.Hours, r.ToHour.Hours)).ToList();
+
+            return reservationsForSchedule;
+        }
+
+        public async Task<List<Reservation>> GetReservationsForUser(string userId)
+        {
+            return await _context.Reservations.Where(x => x.UserId == userId).OrderByDescending(x => x.SubmissionDateTime).ToListAsync();
         }
     }
 }

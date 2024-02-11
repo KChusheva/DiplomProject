@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KristaRecords", "KristaReco
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KristaRecords.Infrastructure", "KristaRecords.Infrastructure\KristaRecords.Infrastructure.csproj", "{946CC2EB-BDB5-48C5-9093-D4BFE1ED65DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KristaRecords.Core", "KristaRecords.Core\KristaRecords.Core.csproj", "{6D6DF6E1-73D0-4A77-8DD7-83FC4B3C29DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KristaRecords.Core", "KristaRecords.Core\KristaRecords.Core.csproj", "{6D6DF6E1-73D0-4A77-8DD7-83FC4B3C29DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

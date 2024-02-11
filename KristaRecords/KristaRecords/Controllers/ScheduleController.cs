@@ -15,10 +15,11 @@ namespace KristaRecords.Controllers
     public class ScheduleController : Controller
     {
         private readonly IScheduleService _scheduleService;
-
-        public ScheduleController(IScheduleService scheduleService)
+        private readonly IReservationService _reservationService;
+        public ScheduleController(IScheduleService scheduleService, IReservationService reservationService)
         {
             this._scheduleService = scheduleService;
+            this._reservationService = reservationService;
         }
 
         [AllowAnonymous]
@@ -40,12 +41,16 @@ namespace KristaRecords.Controllers
             }
             else
             {
-                schedules = await _scheduleService.GetAll(); 
+                schedules = await _scheduleService.GetAll();
             }
 
             if ((!this.User.IsInRole("Administrator")))
             {
-                schedules = schedules.Where(x => x.Date >= DateTime.Today && x.AvailableHours > 0);
+                DateTime now = DateTime.Now;
+                TimeSpan cutoffTime = new TimeSpan(20, 0, 0);
+
+                schedules = schedules.Where(x => (x.Date == DateTime.Today && now.TimeOfDay < cutoffTime && x.AvailableHours > 0) ||
+                                                 (x.Date > DateTime.Today && x.AvailableHours > 0));
             }
 
             IEnumerable<ScheduleIndexVM> schedulesVM = schedules.Select(x => new ScheduleIndexVM
@@ -54,7 +59,10 @@ namespace KristaRecords.Controllers
                 AvailableHours = x.AvailableHours,
                 Date = x.Date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                 Discount = x.Discount,
-                IsBusy = x.IsBusy
+                IsBusy = x.IsBusy,
+                ReservationsHours = x.Reservations != null ?
+                                    _reservationService.GetReservationsDatesForSchedule(x.Reservations).ToList() :
+                                    new List<(int, int)>(),
             });
 
             return View(schedulesVM);
@@ -101,7 +109,7 @@ namespace KristaRecords.Controllers
                 Date = schedule.Date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture),
                 AvailableHours = schedule.AvailableHours,
                 Discount = schedule.Discount,
-                IsBusy = schedule.IsBusy,
+                IsBusy = schedule.IsBusy
             };
 
             return View(updatedSchedule);
@@ -123,6 +131,7 @@ namespace KristaRecords.Controllers
 
             }
 
+            ModelState.AddModelError("", "Cannot edit schedule because it has associated reservations or error in database. You can edit only the IsBusy field");
             return View(schedule);
         }
 
@@ -207,7 +216,17 @@ namespace KristaRecords.Controllers
                 AvailableHours = item.AvailableHours,
                 Discount = item.Discount,
                 IsBusy = item.IsBusy,
-                Reservations = item.Reservations.Select(x => new ReservationIndexVM { })
+                Reservations = item.Reservations.Select(x => new ReservationScheduleVM
+                {
+                    Id = x.Id,
+                    Username = x.User.UserName,
+                    CategoryName = x.Category.CategoryName,
+                    FromHour = x.FromHour.ToString("hh"),
+                    ToHour = x.ToHour.ToString("hh"),
+                    ScheduleDate = item.Date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    TotalPrice = x.TotalAmount,
+                    SubmissionDate = x.SubmissionDateTime.ToString("dd/MM/yyyy hh:mm")
+                })
             };
 
             return View(schedule);

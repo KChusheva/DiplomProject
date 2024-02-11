@@ -22,6 +22,6 @@ namespace KristaRecords.Models.Schedule
 
         [Display(Name = "Schedule is busy?")]
         public bool IsBusy { get; set; }
-        public IEnumerable<ReservationIndexVM> Reservations { get; set; }
+        public IEnumerable<ReservationScheduleVM> Reservations { get; set; }
     }
 }

@@ -46,7 +46,11 @@ namespace KristaRecords.Core.Services
 
         public async Task<Schedule> GetSchedule(int id)
         {
-            return await _context.Schedules.Include(s => s.Reservations).FirstOrDefaultAsync(s => s.Id == id);
+            return await _context.Schedules.Include(s => s.Reservations)
+                                           .ThenInclude(x => x.Category)
+                                           .Include(s => s.Reservations)
+                                           .ThenInclude(x => x.User)
+                                           .FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<bool> AddSchedule(DateTime date, int availableHours, decimal discount, bool isBusy = false)
@@ -72,13 +76,28 @@ namespace KristaRecords.Core.Services
                 return false;
             }
 
-            schedule.AvailableHours = availableHours;
-            schedule.Discount = discount;
-            schedule.IsBusy = isBusy;
-            schedule.Date = date;
+            if (!schedule.Reservations.Any() || IsBusyOnlyChanged(schedule, isBusy, date, availableHours, discount))
+            {
 
-            _context.Update(schedule);
-            return await _context.SaveChangesAsync() != 0;
+                schedule.AvailableHours = availableHours;
+                schedule.Discount = discount;
+                schedule.IsBusy = isBusy;
+                schedule.Date = date;
+
+                _context.Update(schedule);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool IsBusyOnlyChanged(Schedule schedule, bool newIsBusy, DateTime newDate, int newAvailableHours, decimal newDiscount)
+        {
+            return schedule.IsBusy != newIsBusy &&
+                   schedule.Date == newDate &&
+                   schedule.AvailableHours == newAvailableHours &&
+                   schedule.Discount == newDiscount;
         }
 
         public async Task<bool> DeleteSchedule(int id)
@@ -97,7 +116,7 @@ namespace KristaRecords.Core.Services
         public async Task<bool> IsDateOccupied(string date)
         {
             return await _context.Schedules
-                                 .AnyAsync(x => 
+                                 .AnyAsync(x =>
                                            x.Date.Year == DateTime.ParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture).Year &&
                                            x.Date.Month == DateTime.ParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture).Month &&
                                            x.Date.Day == DateTime.ParseExact(date, "MM/dd/yyyy", CultureInfo.InvariantCulture).Day

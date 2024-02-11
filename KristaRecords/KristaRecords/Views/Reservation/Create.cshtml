@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Make a reservation";
+    var reservationsDatesJson = Newtonsoft.Json.JsonConvert.SerializeObject(Model.ReservationsDates);
 }
 
 <h2>Make a Reservation for schedule: @Model.ScheduleDate</h2>
@@ -29,7 +30,6 @@
                                 <span class="fas fa-calendar"></span>
                             </span>
                         </div>
-                        <span asp-validation-for="FromHour" class="text-danger"></span>
                     </div>
                     <span asp-validation-for="FromHour" class="text-danger"></span>
                 </div>
@@ -53,12 +53,6 @@
                     <span asp-validation-for="ToHour" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <span class="text-danger d-none" id="date-inval">Invalid date!</span>
-                </div>
-                <div class="form-group">
-                    <span class="text-danger d-none" id="date-error">The room is already reserved in that period.</span>
-                </div>
-                <div class="form-group">
                     <label asp-for="CategoryId" class="control-label"></label>
                     <select id="categorySelect" asp-for="CategoryId" class="form-control text-center">
                         @foreach (var category in Model.Categories)
@@ -72,6 +66,10 @@
             <div class="col-md-12">
                 <h5>Reservation data: </h5>
                 <br />
+                <div class="form-group">
+                    <label asp-for="AvailableHours" class="control-label"></label>
+                    <input asp-for="AvailableHours" class="form-control" readonly="readonly" />
+                </div>
                 <div class="form-group">
                     <label id="hourlyRateLabel" class="control-label">Price($) Per Hour</label>
                     <input id="hourlyRateDisplay" class="form-control" readonly="readonly" value="0" />
@@ -105,8 +103,59 @@
 
 <script>
     $(function () {
+        var reservationsDates = @Html.Raw(reservationsDatesJson) ?? [];
+        var reservationDatesMapped = reservationsDates.map(tuple => ({ fromHour: tuple.Item1, toHour: tuple.Item2 })).reduce((acc, val) => [acc[0].concat(val.fromHour), acc[1].concat(val.toHour)], [[], []]);
+        var disableTimeInterval = reservationsDates.map(tuple => ({ from: new Date(new Date().setHours(tuple.Item1 - 1)), to: new Date(new Date().setHours(tuple.Item2 - 1))}))
+
+        // Declare an array to store the range of hours
+        var hoursRange = [];
+
+        // Select the input field for the picked hour
+        var fromHourInput = document.getElementById("datetimepicker1Input");
+
+        // Select the input field for the available hours
+        var availableHoursInput = document.querySelector("[name='AvailableHours']");
+
+        // Add an event listener to the input field for the picked hour
+        fromHourInput.addEventListener("change", function () {
+            // Get the value of the picked hour
+            var timeString = fromHourInput.value;
+            var hour = parseInt(timeString.split(':')[0]);
+            var isPM = timeString.toLowerCase().includes('pm');
+            if (isPM && hour !== 12) {
+                hour += 12; // Convert hour to 24-hour format if PM
+            } else if (!isPM && hour === 12) {
+                hour = 0; // Convert 12 AM to 0
+            }
+
+            // Get the value of the available hours
+            var availableHours = parseInt(availableHoursInput.value);
+
+            // Calculate the total hours
+            var totalHours = hour + availableHours;
+
+            // Clear the hoursRange array
+            hoursRange = [];
+
+            // Populate the hoursRange array with the range of hours
+            for (var i = hour + 1; i <= totalHours; i++) {
+                hoursRange.push(i % 24); // Ensure the hour remains within 24 hours
+            }
+
+            
+            $('#datetimepicker2').tempusDominus('enable');
+
+            $('#datetimepicker2').tempusDominus('updateOptions', {
+                restrictions: {
+                    enabledHours: [...hoursRange].filter(hour => !([0, 1, 2, 3, 4, 5, 6, 7, 21, 22, 23].includes(hour))),
+                    disabledTimeIntervals: disableTimeInterval
+                },
+            });  
+        });
+
         $('#datetimepicker1').tempusDominus({
             useCurrent: false,
+            viewDate: new Date(new Date().setMinutes(0)),
             display: {
                 viewMode: 'clock',
                 components: {
@@ -118,15 +167,24 @@
                     minutes: false,
                     seconds: false,
                 },
+                buttons: {
+                    clear: true,
+                    close: true
+                },
             },
             localization: {
                 format: 'hh:mm t',
                 hourCycle: 'h23',
             },
+            restrictions: {
+                disabledHours: [0, 1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23],
+                disabledTimeIntervals: disableTimeInterval
+            }
         });
 
         $('#datetimepicker2').tempusDominus({
             useCurrent: false,
+            viewDate: new Date(new Date().setMinutes(0)),
             display: {
                 viewMode: 'clock',
                 components: {
@@ -138,12 +196,23 @@
                     minutes: false,
                     seconds: false,
                 },
+                buttons: {
+                    clear: true,
+                    close: true
+                },
             },
             localization: {
                 format: 'hh:mm t',
                 hourCycle: 'h23',
             },
+            restrictions: {
+                enabledHours: [...hoursRange],
+                disabledTimeIntervals: disableTimeInterval
+            },
         });
+
+        $('#datetimepicker2').tempusDominus('disable');
+
 
         // Get references to the select element and the span for displaying hourly rate
         var categorySelect = document.getElementById("categorySelect");
@@ -163,7 +232,6 @@
         });
 
         // Get references to the input elements
-        var fromHourInput = document.getElementById("datetimepicker1Input");
         var toHourInput = document.getElementById("datetimepicker2Input");
         var durationInput = document.getElementById("durationInput");
         var discountInput = document.getElementById("Discount");
@@ -191,8 +259,8 @@
 
         // Function to calculate the duration and update the duration input
         function updateDuration() {
-            truncateMinutesToZero(fromHourInput);
-            truncateMinutesToZero(toHourInput);
+            if (!(fromHourInput.value === undefined) && !(fromHourInput.value === '')) truncateMinutesToZero(fromHourInput);
+            if (!(toHourInput.value === undefined) && !(toHourInput.value === '')) truncateMinutesToZero(toHourInput);
 
             var fromHour = fromHourInput.value;
             var toHour = toHourInput.value;
@@ -217,7 +285,7 @@
 
         // Function to parse TimeSpan values from string format
         function parseTimeSpan(timeSpanString) {
-            if (!(timeSpanString === null) || !(timeSpanString === '')) {
+            if (!(timeSpanString === undefined) && !(timeSpanString === '')) {
                 var parts = timeSpanString.split(' '); // Split time and period (AM/PM)
                 var time = parts[0];
                 var period = parts[1].toUpperCase(); // Convert period to uppercase
@@ -260,5 +328,51 @@
             // Update total price input value
             totalPriceInput.value = totalPrice.toFixed(2); // Round to 2 decimal places
         }
+
+
+        // Select the target node
+        var targetNode = document.querySelector('body');
+
+        // Options for the observer (which mutations to observe)
+        var config = { childList: true, subtree: true };
+
+        // Callback function to execute when mutations are observed
+        var callback = function (mutationsList, observer) {
+            for (var mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    // Check if any of the added nodes have the class tempus-dominus-widget
+                    const tempusWidgets = document.querySelectorAll('.tempus-dominus-widget');
+                    tempusWidgets.forEach(tempusWidget => {
+                        // If the tempus-dominus-widget is shown, hide the divs with data-action attributes
+                        const incrementHoursDiv = tempusWidget.querySelector('[data-action="incrementHours"]');
+                        const decrementHoursDiv = tempusWidget.querySelector('[data-action="decrementHours"]');
+                        const showHoursDiv = tempusWidget.querySelector('[data-action="showHours"]')
+
+                        showHoursDiv.textContent = "Pick hour";
+
+                        if (incrementHoursDiv) {
+                            incrementHoursDiv.style.opacity = 0;
+                            incrementHoursDiv.style.pointerEvents = 'none';
+                            incrementHoursDiv.style.display = 'none';
+                        }
+
+                        if (decrementHoursDiv) {
+                            decrementHoursDiv.style.opacity = 0;
+                            decrementHoursDiv.style.pointerEvents = 'none';
+                            decrementHoursDiv.style.display = 'none';
+
+                        }
+                    });
+                }
+            }
+        };
+
+
+        // Create an observer instance linked to the callback function
+        var observer = new MutationObserver(callback);
+
+        // Start observing the target node for configured mutations
+        observer.observe(targetNode, config);
+
     });
 </script>

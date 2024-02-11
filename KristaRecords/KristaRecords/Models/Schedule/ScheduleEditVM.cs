@@ -11,7 +11,7 @@ namespace KristaRecords.Models.Schedule
         public string? Date { get; set; }
 
         [Required]
-        [Range(1, 12)]
+        [Range(0, 12)]
         [Display(Name = "Available Hours")]
         public int AvailableHours { get; set; }
 
@@ -21,5 +21,6 @@ namespace KristaRecords.Models.Schedule
 
         [Display(Name = "Schedule is busy?")]
         public bool IsBusy { get; set; }
+
     }
 }

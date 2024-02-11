@@ -17,5 +17,9 @@ namespace KristaRecords.Models.Schedule
 
         [Display(Name = "Studio is busy?")]
         public bool IsBusy { get; set; }
+
+        [Display(Name = "Schedule busy from: ")]
+
+        public List<(int, int)> ReservationsHours { get; set; }
     }
 }

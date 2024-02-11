@@ -53,17 +53,32 @@
                                 <h5 class="text-dark ">Discount: @schedule.Discount$</h5>
                             }
                             <p class="text-dark mb-0">Schedule is busy: @(schedule.IsBusy ? "Yes" : "No")</p>
+                            @if (schedule.ReservationsHours.Count > 0)
+                            {
+                                <p class="text-dark mb-0">
+                                    Busy Reservation Hours:
+                                    @foreach (var hour in schedule.ReservationsHours)
+                                    {
+                                        <span>@hour.Item1 - @hour.Item2</span>
+
+                                        if (hour != schedule.ReservationsHours.Last())
+                                        {
+                                            <span>, </span>
+                                        }
+                                    }
+                                </p>
+                            }
                         </div>
                         <div class="col-md-3 col-12 justify-content-around align-self-center d-flex flex-row flex-md-column">
                             <form asp-controller="Schedule" asp-action="Details" asp-route-id="@schedule.Id" method="get" class="my-2">
                                 <input class="btn btn-info " type="submit" value="Info" />
                             </form>
 
-                            @if (!schedule.IsBusy && DateTime.ParseExact(schedule.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= DateTime.Today)
+                            @if (schedule.AvailableHours > 0 && DateTime.ParseExact(schedule.Date, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= DateTime.Today)
                             {
-                            <form asp-controller="Reservation" asp-action="Create" asp-route-id="@schedule.Id" method="get" class="my-2">
+                                <form asp-controller="Reservation" asp-action="Create" asp-route-id="@schedule.Id" method="get" class="my-2">
                                     <input class="btn btn-success" type="submit" value="Reserve" />
-                            </form>
+                                </form>
                             }
 
                             @if ((this.User.Identity.IsAuthenticated) && (this.User.IsInRole("Administrator")))
@@ -74,7 +89,7 @@
                                 @if (!schedule.IsBusy)
                                 {
                                     <form asp-controller="Schedule" asp-action="Delete" asp-route-id="@schedule.Id" method="get" class="my-2">
-                                    <input class="btn btn-danger" type="submit" value="Delete"/>
+                                        <input class="btn btn-danger" type="submit" value="Delete" />
                                     </form>
                                 }
                             }
