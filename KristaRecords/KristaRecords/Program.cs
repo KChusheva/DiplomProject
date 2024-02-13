@@ -7,6 +7,7 @@ using KristaRecords.Infrastrucutre.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace KristaRecords
 {
     public class Program
@@ -39,6 +40,7 @@ namespace KristaRecords
             builder.Services.AddTransient<IEventService, EventService>();
             builder.Services.AddTransient<IScheduleService, ScheduleService>();
             builder.Services.AddTransient<IReservationService, ReservationService>();
+            builder.Services.AddTransient<IStatisticService, StatisticService>();
 
             var app = builder.Build();
 

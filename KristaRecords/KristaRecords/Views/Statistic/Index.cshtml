@@ -1,0 +1,63 @@
+﻿@using KristaRecords.Models.Statistic
+@model StatisticVM
+
+@{
+    ViewData["Title"] = "Statistics";
+}
+
+<h4 class="text-center">Statistic</h4>
+<div class="text-center">
+    <div class="col-xl-8">
+        <div class="card-group pb-0">
+            <div class="card-columns text-center">
+            </div>
+        </div>
+        <table class="table table-striped " style="width:150%">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CountClients)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CountEvents)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CountReservations)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SumReservations)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Username)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.UserReservationCount)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => model.CountClients)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.CountEvents)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.CountReservations)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.SumReservations)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Username)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.UserReservationCount)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
