@@ -15,5 +15,6 @@ namespace KristaRecords.Infrastrucutre.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }

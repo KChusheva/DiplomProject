@@ -41,6 +41,7 @@ namespace KristaRecords
             builder.Services.AddTransient<IScheduleService, ScheduleService>();
             builder.Services.AddTransient<IReservationService, ReservationService>();
             builder.Services.AddTransient<IStatisticService, StatisticService>();
+            builder.Services.AddTransient<IReviewService, ReviewService>();
 
             var app = builder.Build();
 

@@ -1,0 +1,158 @@
+﻿@using KristaRecords.Core.Contracts;
+@using System.Security.Claims;
+@model KristaRecords.Models.Comment.CommentVM
+@inject IReservationService _reservationService;
+@inject IReviewService _reviewService;
+
+@{
+    ViewData["Title"] = "Reviews";
+
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var userReservations = await _reservationService.GetReservationsForUser(userId);
+}
+
+<article>
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <h3 class="mb-5">@Model.Comments.Where(comment => comment.Parent is null).Count() Reviews</h3>
+                <ul class="comment-list  comment-top" list="@Model.Comments" count="0">
+                    @foreach (var review in Model.Comments.Where(review => review.Parent is null))
+                    {
+                        <li class="comment" style="margin-top: 30px;">
+
+                            <div class="comment-body">
+                                <h4 class="commenter-name">@review.Author.FirstName @review.Author.LastName</h4>
+                                <div class="comment-date">@review.CreatedOn.ToString("MMMM d, yyyy hh:mm tt")</div>
+                                <p class="comment-message">@review.Content</p>
+
+                                @if (this.User.IsInRole("Administrator"))
+                                {
+                                    <a aria-expanded="false" aria-controls="@($"replyComment{review.Id}")" data-toggle="collapse" data-target="@($"#replyComment{review.Id}")" class="reply-btn btn">Reply</a>
+                                }
+
+                                @if (this.User.IsInRole("Administrator") || review.AuthorId == userId)
+                                {
+                                    <a aria-expanded="false" aria-controls="@($"editComment{review.Id}")" data-toggle="collapse" data-target="@($"#editComment{review.Id}")" class="btn btn-success">Edit</a>
+
+                                    <form asp-controller="Review" asp-action="Delete" asp-route-id="@review.Id" class="my-2"
+                                          method="post" style="display: inline;">
+                                        <input class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete review?')" value="Delete" />
+                                    </form>
+                                }
+
+                            </div>
+
+                            @if ((User.Identity.IsAuthenticated) && (this.User.IsInRole("Administrator")))
+                            {
+                                <div id="@($"replyComment{review.Id}")" class="collapse">
+                                    <form asp-controller="Review" asp-action="Add">
+                                        <input asp-for="AddComment.Parent.Id" value="@review.Id" readonly hidden />
+                                        <div class="form-group">
+                                            <label for="comment">Write a reply</label>
+                                            <textarea asp-for="AddComment.Content" class="form-control" rows="3"></textarea>
+                                            <button type="submit" class="btn btn-outline-primary post-btn">Post</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            }
+
+                            @if (this.User.IsInRole("Administrator") || review.AuthorId == userId)
+                            {
+                                var content = (await _reviewService.GetComment(review.Id)).Content;
+
+                                <div id="@($"editComment{review.Id}")" class="collapse">
+                                    <form asp-controller="Review" asp-action="Edit">
+                                        <input asp-for="EditComment.Id" value="@review.Id" readonly hidden />
+                                        <input asp-for="EditComment.ParentId" value="@review.ParentId" readonly hidden />
+                                        <div class="form-group">
+                                            <label for="comment">Edit comment</label>
+                                            <input asp-for="EditComment.Content" class="form-control" value="@content" />
+                                            <button type="submit" class="btn btn-outline-primary post-btn">Edit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            }
+
+                            <ul class="comment-list" list="@review.Comments" count="0" style="margin-left: 30px; margin-top:0;">
+                                @foreach (var reply in review.Comments)
+                                {
+                                    <li class="comment">
+                                        <div class="comment-body">
+                                            <h3 class="commenter-name">@reply.Author.FirstName @reply.Author.LastName</h3>
+                                            <div class="comment-date">@reply.CreatedOn.ToString("MMMM d, yyyy hh:mm tt")</div>
+                                            <p class="comment-message">@reply.Content</p>
+                                        </div>
+
+                                        @if(this.User.IsInRole("Administrator") && reply.AuthorId == userId)
+                                        {
+                                            <a aria-expanded="false" aria-controls="@($"editComment{reply.Id}")" data-toggle="collapse" data-target="@($"#editComment{reply.Id}")" class="btn btn-success">Edit</a>
+
+                                            <form asp-controller="Review" asp-action="Delete" asp-route-id="@reply.Id" class="my-2"
+                                                  method="post" style="display: inline;">
+                                                <input class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete review?')" value="Delete" />
+                                            </form>
+                                        }
+                                    </li>
+
+                                    @if ((User.Identity.IsAuthenticated && this.User.IsInRole("Administrator") && reply.AuthorId == userId))
+                                    {
+                                        var content = (await _reviewService.GetComment(reply.Id)).Content;
+
+                                        <div id="@($"editComment{reply.Id}")" class="collapse">
+                                            <form asp-controller="Review" asp-action="Edit">
+                                                <input asp-for="EditComment.Id" value="@reply.Id" readonly hidden />
+                                                <input asp-for="EditComment.ParentId" value="@reply.ParentId" readonly hidden />
+                                                <div class="form-group">
+                                                    <label for="comment">Edit comment</label>
+                                                    <input asp-for="EditComment.Content" class="form-control" value="@content" />
+                                                    <button type="submit" class="btn btn-outline-primary post-btn">Edit</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    }
+                                }
+                            </ul>
+                        </li>
+                        <hr />
+                    }
+                </ul>
+
+                @if (User.Identity.IsAuthenticated && userReservations.Count > 0)
+                {
+                    <div>
+                        <form asp-controller="Review" asp-action="Add">
+                            <div class="form-group">
+                                <label for="comment">Add Review</label>
+                                <textarea asp-for="AddComment.Content" class="form-control" rows="3" required></textarea>
+                                <button type="submit" class="btn btn-outline-primary post-btn">Post</button>
+                            </div>
+                        </form>
+                    </div>
+                }
+                else if (!User.Identity.IsAuthenticated)
+                {
+                    <a class="reply-btn btn" asp-area="Identity" asp-page="/Account/Login" asp-route-ReturnUrl="~/Review/Index">Login to add a review</a>
+                }
+                else
+                {
+                    <a class="reply-btn btn" asp-controller="Schedule" asp-action="Index">Create a reservation to write a review</a>
+                }
+            </div>
+        </div>
+    </div>
+</article>
+
+@section Scripts{
+    <script>
+        $('[data-toggle="collapse"]').on('click', function () {
+            var $this = $(this),
+                targetId = $this.data('target'),
+                $parent = typeof $this.data('parent') !== 'undefined' ? $($this.data('parent')) : undefined;
+            if ($parent === undefined) {
+                $(targetId).collapse('toggle')
+            }
+
+        });
+    </script>
+}
